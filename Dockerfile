@@ -4,8 +4,11 @@ WORKDIR /evolution
 
 RUN apk add --no-cache git
 
-RUN git clone https://github.com/EvolutionAPI/evolution-api.git . && \
-    npm ci --only=production
+RUN git clone https://github.com/EvolutionAPI/evolution-api.git .
+
+RUN npm install --legacy-peer-deps
+
+RUN npm run build
 
 EXPOSE 8080
 

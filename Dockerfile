@@ -2,14 +2,19 @@ FROM node:20-alpine
 
 WORKDIR /evolution
 
-RUN apk add --no-cache git
+RUN apk add --no-cache git curl
 
-RUN git clone https://github.com/EvolutionAPI/evolution-api.git .
+# Clonar versão estável específica
+RUN git clone -b main https://github.com/EvolutionAPI/evolution-api.git . && \
+    git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
 
-RUN npm install --legacy-peer-deps
+# Instalar dependências
+RUN npm install --legacy-peer-deps --ignore-scripts
 
-RUN npm run build
+# Copiar variáveis se existirem
+RUN cp .env.example .env || true
 
 EXPOSE 8080
 
-CMD ["node", "./dist/src/main.js"]
+# Rodar direto sem build (modo desenvolvimento estável)
+CMD ["npm", "run", "start:dev"]
